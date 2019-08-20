@@ -34,6 +34,8 @@ router.post('/login', async (req, res) => {
             username
         }).first();
         if (user && bcrypt.compareSync(password, user.password)) {
+            req.session.username = user.username; 
+            req.session.loggedIn = true;
             res.status(200).json({
                 message: `Welcome ${user.username}!`
             });
@@ -80,5 +82,11 @@ router.get('/restricted/user/:id', restricted, async (req, res) => {
         res.status(500).json(err);
     }
 });
+
+router.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+      res.status(200).json({ bye: 'felicia' });
+    });
+  });
 
 module.exports = router;
